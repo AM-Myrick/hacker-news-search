@@ -1,6 +1,6 @@
 import Vue from "vue"
 import VueRouter from "vue-router"
-import Search from "../views/Search.vue"
+import SearchPage from "../views/SearchPage.vue"
 import History from "../views/History.vue"
 
 Vue.use(VueRouter)
@@ -9,7 +9,7 @@ const routes = [
   {
     path: "/search/:searchTerm?",
     name: "Search",
-    component: Search
+    component: SearchPage
   },
   {
     path: "/history",

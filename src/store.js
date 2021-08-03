@@ -2,13 +2,14 @@ import Vue from "vue";
 import Vuex from "vuex";
 
 import axios from "axios";
-const HACKER_NEWS_API = "http://hn.algolia.com/api/v1/search?query=";
+const HACKER_NEWS_API = "https://hn.algolia.com/api/v1/search?query=";
+const DEFAULT_SEARCH_HISTORY = ["slack", "apple", "google", "iphone", "android", "tiktok", "twitter", "teams"]
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    previousSearchTerms: [],
+    searchTerms: DEFAULT_SEARCH_HISTORY,
     searchResults: []
   },
   mutations: {
@@ -16,19 +17,20 @@ export default new Vuex.Store({
       state.searchResults = searchResults;
     },
     addSearchTerm(state, newSearchTerm) {
-      const updatedSearchTerms = [newSearchTerm, ...state.previousSearchTerms];
-      state.previousSearchTerms = updatedSearchTerms;
+      if (newSearchTerm === "") return;
+      const updatedSearchTerms = [newSearchTerm, ...state.searchTerms];
+      state.searchTerms = updatedSearchTerms;
     },
-    removeItem(state, searchTerm) {
-      const searchTermIndex = state.previousSearchTerms.indexOf(searchTerm);
-      state.previousSearchTerms.splice(searchTermIndex, 1);
+    clearSearchResults(state) {
+      state.searchResults = [];
     }
   },
   actions: {
     async searchHackerNews({ commit }, searchTerm) {
       commit("addSearchTerm", searchTerm);
-      const data = await axios.get(HACKER_NEWS_API + searchTerm);
-      commit("addSearchResults", data);
+      const { data: { hits } } = await axios.get(`${HACKER_NEWS_API}${searchTerm}&tags=story`);
+      commit("addSearchResults", hits);
+      return;
     },
   }
 });
